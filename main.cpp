@@ -15,7 +15,7 @@ using namespace std;
 #define WIDTH 10681
 
 vector<size_t> parse_file(string path) { // toma la ruta de un archivo y devuelve vector size_t
-#pragma omp critical 
+#pragma omp critical // Marca una sección crítica para evitar condiciones de carrera en la impresión de mensajes en paralelo
   cout << "[INFO] Poblando el archivo " << path << std::endl;
   vector<size_t> aux(WIDTH * HEIGHT, 0); //inicializa vector "aux" de tamaño widthxheight en 0
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {  //Verigica que se proporcionen al menos 6 ar
   }
   // Genero un arreglo en el heap
   uint32_t *pixels = new uint32_t[WIDTH * HEIGHT];
-#pragma omp parallel
+#pragma omp parallel // Inicia un bucle paralelo para inicializar todos los píxeles a cero en paralelo
   for(size_t i = 0; i < WIDTH * HEIGHT; i++){
     pixels[i] = 0;
   }
@@ -69,17 +69,17 @@ int main(int argc, char *argv[]) {  //Verigica que se proporcionen al menos 6 ar
   cout << "[INFO] Generando Imagen" << endl;
   
   // Esto hace que cada función se ejecute en su propio hilo.
-#pragma omp parallel 
-#pragma omp single
+#pragma omp parallel //Inicia una región paralela.
+#pragma omp single // Garantiza que las tareas siguientes se ejecuten solo una vez
   {
-#pragma omp task
-     pixeling(&pixels, argv[1], mean, 24, 0.0f);
-#pragma omp task
-     pixeling(&pixels, argv[2], mean, 0, 0.3f);
-#pragma omp task
-     pixeling(&pixels, argv[3], mean, 8, 0.59f);
-#pragma omp task
-     pixeling(&pixels, argv[4], mean, 16, 0.11f);
+#pragma omp task // Cada tarea siguiente se ejecutará en paralelo.
+     pixeling(&pixels, argv[1], mean, 24, 0.0f); //: Llama a la función pixeling en paralelo para el archivo alfa.txt
+#pragma omp task // Cada tarea siguiente se ejecutará en paralelo.
+     pixeling(&pixels, argv[2], mean, 0, 0.3f); // Llama a la función pixeling en paralelo para el archivo rojo.txt.
+#pragma omp task // Cada tarea siguiente se ejecutará en paralelo.
+     pixeling(&pixels, argv[3], mean, 8, 0.59f); // Llama a la función pixeling en paralelo para el archivo verde.txt.
+#pragma omp task // Cada tarea siguiente se ejecutará en paralelo.
+     pixeling(&pixels, argv[4], mean, 16, 0.11f); // Llama a la función pixeling en paralelo para el archivo azul.txt.
   }
 
   // Despejo de memoria del vector mean
