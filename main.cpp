@@ -45,7 +45,7 @@ void pixeling(uint32_t *pixels[], string path, vector<size_t> &mean, uint8_t ste
     (*pixels)[i] = (value << step | (*pixels)[i]);
   }
 
-  file.close();
+  file.close(); // Cierra el archivo leido
 }
 
 int main(int argc, char *argv[]) {  //Verigica que se proporcionen al menos 6 argumentos
