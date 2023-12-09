@@ -31,6 +31,20 @@ vector<size_t> parse_file(string path) {
   return aux;
 }
 
+void pixeling(uint32_t *pixels[], string path, vector<size_t> &mean, uint8_t step, float percentage) {
+  ifstream file(path);
+
+  for (int i = 0; i < HEIGHT * WIDTH; ++i) {
+    string out;
+    file >> out;
+
+    uint32_t value = !out.compare("*") ? mean[i] * percentage : (uint32_t)std::stoi(out);
+    (*pixels)[i] = (value << step | (*pixels)[i]);
+  }
+
+  file.close();
+}
+
 int main(int argc, char *argv[]) {
   if (argc < 6) {
     cout << "Error, falta la ruta de alguno de los .txt" << endl
@@ -40,55 +54,31 @@ int main(int argc, char *argv[]) {
 
     return 1;
   }
-  vector<size_t> alfa;
-  vector<size_t> azul;
-  vector<size_t> rojo;
-  vector<size_t> verde;
-  vector<size_t> mean;
+  // Genero un arreglo en el heap
+  uint32_t *pixels = new uint32_t[WIDTH * HEIGHT];
+#pragma omp parallel
+  for(size_t i = 0; i < WIDTH * HEIGHT; i++){
+    pixels[i] = 0;
+  }
 
+  vector<size_t> mean = parse_file(argv[5]);
+
+  cout << "[INFO] Generando Imagen" << endl;
   // Esto hace que cada función se ejecute en su propio hilo.
 #pragma omp parallel
 #pragma omp single
   {
 #pragma omp task
-    alfa = parse_file(argv[1]);
+     pixeling(&pixels, argv[1], mean, 24, 0.0f);
 #pragma omp task
-    rojo = parse_file(argv[2]);
+     pixeling(&pixels, argv[2], mean, 0, 0.3f);
 #pragma omp task
-    verde = parse_file(argv[3]);
+     pixeling(&pixels, argv[3], mean, 8, 0.59f);
 #pragma omp task
-    azul = parse_file(argv[4]);
-#pragma omp task
-    mean = parse_file(argv[5]);
+     pixeling(&pixels, argv[4], mean, 16, 0.11f);
   }
 
-  cout << "[INFO] Generando Imagen" << endl;
-
-  // Genero un arreglo en el heap
-  uint32_t *pixels = new uint32_t[WIDTH * HEIGHT];
-
-#pragma omp parallel for
-  for (int i = 0; i < HEIGHT * WIDTH; ++i) {
-    if (rojo[i] > 255)
-      rojo[i] = mean[i] * 0.3;
-    if (verde[i] > 255)
-      verde[i] = mean[i] * 0.59;
-    if (azul[i] > 255)
-      azul[i] = mean[i] * 0.11;
-
-    // Pixel[i] = 0xFFAABBCC
-    //  FF -> Alfa
-    //  AA -> Azul
-    //  BB -> Verde
-    //  CC -> Rojo
-    pixels[i] = (alfa[i] << 24 | azul[i] << 16 | verde[i] << 8 | rojo[i]);
-  }
-
-  // Esto es para vaciar memoria nomas
-  rojo = vector<size_t>();
-  azul = vector<size_t>();
-  verde = vector<size_t>();
-  alfa = vector<size_t>();
+  // Despejo memoria
   mean = vector<size_t>();
 
   cout << "[INFO] Escribiendo imagen" << endl;

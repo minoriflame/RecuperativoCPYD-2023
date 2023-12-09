@@ -4,13 +4,15 @@ Desarollo trabajo recuperativo de la asignatura Computación Paralela y Distribu
 Integrante:
 Natalia Fernanda Vera Uribe
 
-NOTA: 
+## Notas
 Existen dos formas de compilar este proyecto con make:
 
+```bash
 # Compila normal, sin optimizaciones
 $ make
+```
 
-
-
+```bash
 # Compila con optimizaciones O2, con esto corre como en ~30 segs en mi pc
 $ make release
+```

@@ -15,7 +15,7 @@ EXEC = main
 
 all: $(EXEC)
 
-release:
+release: $(OBJS)
 	$(CC) $(CFLAGS) -O2 $(OBJS) -o $(EXEC)
 
 $(EXEC): $(OBJS)
