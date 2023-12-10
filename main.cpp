@@ -48,7 +48,7 @@ void pixeling(uint32_t *pixels[], string path, vector<size_t> &mean, uint8_t ste
   file.close(); // Cierra el archivo leido
 }
 
-int main(int argc, char *argv[]) {  //Verigica que se proporcionen al menos 6 argumentos
+int main(int argc, char *argv[]) {  //Verifica que se proporcionen al menos 6 argumentos
   if (argc < 6) {
     cout << "Error, falta la ruta de alguno de los .txt" << endl
          << "uso: main <alfa.txt> <rojo.txt> <verde.txt> <azul.txt> "
