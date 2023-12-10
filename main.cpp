@@ -3,6 +3,7 @@
 #include <iostream> // E/S estandar
 #include <omp.h> //OpenMP
 #include <vector> //vectores
+#include <cstdint>
 
 //activar implementación de libreria stb
 #define STB_IMAGE_WRITE_IMPLEMENTATION  
